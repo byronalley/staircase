@@ -1,10 +1,8 @@
 pub fn staircase(text: &str) -> String {
     let mut output: Vec<&str> = text
         .lines()
-        .map(|line| line.trim())
-        .filter(|line| !line.is_empty())
-        .collect::<Vec<&str>>()
-        .into_iter()
+        .map(|line| line.trim_end())
+        .filter(|line| !line.chars().all(char::is_whitespace))
         .collect::<Vec<&str>>();
 
     output.sort_by_key(|line| line.len());
@@ -36,7 +34,7 @@ mod tests {
     #[test]
     fn test_multiple_lines_sorted_by_length() {
         let input = "hello\nworld\n  buzz\nfoo\n  \n";
-        assert_eq!(staircase(input), "foo\nbuzz\nhello\nworld");
+        assert_eq!(staircase(input), "foo\nhello\nworld\n  buzz");
     }
 
     #[test]
@@ -47,7 +45,13 @@ mod tests {
 
     #[test]
     fn test_mixed_whitespace_and_content() {
-        let input = "  a  \n\tb\t\n c \n\n";
-        assert_eq!(staircase(input), "a\nb\nc");
+        let input = "  a  \n  ccc\t\n  bb \n\n";
+        assert_eq!(staircase(input), "  a\n  bb\n  ccc");
+    }
+
+    #[test]
+    fn test_preserves_indentation() {
+        let input = "  \t- XX\n  \t- Y";
+        assert_eq!(staircase(input), "  \t- Y\n  \t- XX");
     }
 }
